@@ -24,14 +24,24 @@ module Checker
 
   def existence_match_checker()
     @flags
-    for i in (0..@flags.length - 1)
-      if @flags[i] == nil
+    @nilPositionsInFlags = @flags.each_index.select {|i| @flags[i] == nil}
+    @remainingCodeToGuess = @gameArray.select.with_index {|_, index| @nilPositionsInFlags.include? index }
+    @nonExactGuesses = @guess.select.with_index {|_, index| @nilPositionsInFlags.include? index }
 
-        if @gameArray.include? @guess[i]
+
+    for i in @nilPositionsInFlags
+        if @remainingCodeToGuess.include? @guess[i]
           @flags[i] = "White"
         end
-      end
     end
+    # for i in (0..@flags.length - 1)
+    #   if @flags[i] == nil
+    #
+    #     if @gameArray.include? @guess[i]
+    #       @flags[i] = "White"
+    #     end
+    #   end
+    # end
   end
 end
 
@@ -62,7 +72,7 @@ class Mastermind
   def play()
     generate_random_code()
     while @winner == false do
-        # p @gameArray
+        p @gameArray
         collect_user_input()
         @flags = Array.new(4)
         exact_match_checker(@guess)
@@ -76,21 +86,6 @@ end
 
 game = Mastermind.new()
 
-
-guess = [1, 6, 5, 3]
-gamenum = [1, 3, 5, 6]
-flag = ['Green', nil, 'Green', nil]
-
-# y = a.map do |i|
-#     if i == nil
-p y = flag.each_index.select {|i| flag[i] == nil}
-p @newgamenum = gamenum.select.with_index {|_, index| y.include? index }
-p @remainingguess = guess.select.with_index {|_, index| y.include? index }
-
-
-if @newgamenum.include? @remainingguess[i]
-    puts "white"
-end
 
 
 # DEV CODE
