@@ -83,8 +83,6 @@ module FindWinner
         end
     end
 
-    # check_if_row_winner(board)
-
     # checks winner by column
     def change_columns_to_rows(array)
         @widercheck = []
@@ -98,11 +96,29 @@ module FindWinner
         @widercheck
     end
 
+    def diagonals_to_row(array)
+        @diagonalArraysList = []
+        @diagonalArray = []
+        for i in (0..(@board.length - 1)) do
+          @diagonalArray.push(array[i][i])
+        end
+        @reverseDiagonalArray = []
+        for i in (0..(@board.length - 1))
+          @reverseDiagonalArray.push(@board[i][(@board.length - 1)-i])
+        end
+        @diagonalArraysList.push(@diagonalArray)
+        @diagonalArraysList.push(@reverseDiagonalArray)
+        @diagonalArraysList
+    end
+
     def winner?(board)
         if @turnnumb >= 5
           check_if_row_winner(board)
           change_columns_to_rows(board)
           check_if_row_winner(@widercheck)
+          diagonals_to_row(board)
+          check_if_row_winner(@diagonalArraysList)
+
         end
     end
 end
