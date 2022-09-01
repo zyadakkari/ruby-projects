@@ -1,6 +1,9 @@
+
+
+
 module CodeGenerator
   def generate_random_code()
-    @gameArray = 4.times.map { Random.rand(9) }
+    4.times.map { Random.rand(9) }
   end
 end
 
@@ -34,16 +37,44 @@ module Checker
           @flags[i] = "White"
         end
     end
-    # for i in (0..@flags.length - 1)
-    #   if @flags[i] == nil
-    #
-    #     if @gameArray.include? @guess[i]
-    #       @flags[i] = "White"
-    #     end
-    #   end
-    # end
   end
 end
+
+module CompGuessImprover
+
+  def white_guess_finder
+    @whiteFlags = @flags.each_index.select do |i|
+      if @flags[i] == "White"
+        @guess[i]
+      end
+    end
+  end
+  def guess_improver
+    @flags.each_index.select do |i|
+      if @flags[i] == "White" && @whiteFlags.length > 1
+        if @whiteFlags[0] == @guess[i]
+          @guess[i] = @whiteFlags[1]
+          @whiteFlags.delete_at[1]
+        else
+          @guess[i] = @whiteFlags[0]
+          @whiteFlags.delete_at[0]
+        end
+      elsif @flags[i] == "White"
+        @guess[i] = @availableNumToGuess[Random.rand(@availableNumToGuess.length)]
+      elsif @flags[i] == nil
+        @availableNumToGuess.delete(@guess[i])
+        if @whiteFlags.length >= 1
+          @guess[i] = @whiteFlags[0]
+          @whiteFlags.shift
+        else
+          @guess[i] = @availableNumToGuess[Random.rand(@availableNumToGuess.length)]
+        end
+      end
+    end
+  @guess
+  end
+end
+
 
 module Winner
   def check_win()
@@ -59,6 +90,7 @@ class Mastermind
   include InputCollector
   include Checker
   include Winner
+  include CompGuessImprover
 
   def initialize()
     puts "Welcome to Mastermind! What's your name? "
@@ -66,13 +98,13 @@ class Mastermind
     @numberOfGuesses = 0
     @winner = false
     puts "Hello #{@name}. Let's play!"
-    play()
+    comp_play()
   end
 
-  def play()
-    generate_random_code()
+  def human_play()
+    @gameArray = generate_random_code()
     while @winner == false do
-        p @gameArray
+        # p @gameArray
         collect_user_input()
         @flags = Array.new(4)
         exact_match_checker(@guess)
@@ -80,30 +112,25 @@ class Mastermind
         p @flags
         check_win()
     end
-
+  end
+  def comp_play()
+    @availableNumToGuess = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    puts "Please enter a 4 digit code for the computer to guess: "
+    @gameArray = gets.split()
+    @gameArray.map!(&:to_i)
+    @guess = generate_random_code()
+    while @winner == false do
+      p @guess
+      @flags = Array.new(4)
+      exact_match_checker(@guess)
+      existence_match_checker()
+      white_guess_finder()
+      guess_improver()
+      check_win()
+      sleep 5
+    end
   end
 end
 
+
 game = Mastermind.new()
-
-
-
-# DEV CODE
-
-# def existence_match_checker()
-#   @flags = ["Green", nil, nil, nil]
-#   @guess = [1, 2, 3, 4]
-#   @gameArray = [1, 3, 2, 5]
-#
-#   @nilFlags = @flags.each_index.select {|i| @flags[i] == nil}
-#   @newgamenum = @gameArray.select.with_index {|_, index| @nilFlags.include? index }
-#   @remainingguess = @guess.select.with_index {|_, index| @nilFlags.include? index }
-#
-#   for i in @nilFlags
-#       if @newgamenum.include? @remainingguess[i]
-#         @flags[i] = "White"
-#       end
-#   end
-#   p @flags
-#   end
-# existence_match_checker()
