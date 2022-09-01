@@ -1,4 +1,24 @@
+module Welcomer
+ def welcome_message
+   puts "============================"
+   puts "============================"
+   puts "=== Welcome to Mastermind!=="
+   puts "============================"
+   puts "============================"
+   puts "\nHello! What's your name? "
 
+ end
+end
+
+module RoleChooser
+  def choose_roles(setter)
+    if @roleSetter == "1"
+      human_play()
+    else
+      comp_play()
+    end
+  end
+end
 
 
 module CodeGenerator
@@ -41,7 +61,6 @@ module Checker
 end
 
 module CompGuessImprover
-
   def white_guess_finder
     @whiteFlags = @flags.each_index.select do |i|
       if @flags[i] == "White"
@@ -50,23 +69,28 @@ module CompGuessImprover
     end
   end
   def guess_improver
+    @flags
     @flags.each_index.select do |i|
       if @flags[i] == "White" && @whiteFlags.length > 1
         if @whiteFlags[0] == @guess[i]
           @guess[i] = @whiteFlags[1]
-          @whiteFlags.delete_at[1]
+          @whiteFlags.splice(1,1)
         else
           @guess[i] = @whiteFlags[0]
-          @whiteFlags.delete_at[0]
+          @whiteFlags.shift
         end
       elsif @flags[i] == "White"
         @guess[i] = @availableNumToGuess[Random.rand(@availableNumToGuess.length)]
       elsif @flags[i] == nil
+        @guess[i]
+        # p @availableNumToGuess(@guess[i])
         @availableNumToGuess.delete(@guess[i])
         if @whiteFlags.length >= 1
           @guess[i] = @whiteFlags[0]
           @whiteFlags.shift
         else
+          @availableNumToGuess.length
+          @availableNumToGuess
           @guess[i] = @availableNumToGuess[Random.rand(@availableNumToGuess.length)]
         end
       end
@@ -74,7 +98,6 @@ module CompGuessImprover
   @guess
   end
 end
-
 
 module Winner
   def check_win()
@@ -86,6 +109,8 @@ module Winner
 end
 
 class Mastermind
+  include Welcomer
+  include RoleChooser
   include CodeGenerator
   include InputCollector
   include Checker
@@ -93,22 +118,25 @@ class Mastermind
   include CompGuessImprover
 
   def initialize()
-    puts "Welcome to Mastermind! What's your name? "
+    welcome_message()
     @name = gets.chop
     @numberOfGuesses = 0
     @winner = false
-    puts "Hello #{@name}. Let's play!"
-    comp_play()
+    puts "Hello #{@name}. Let's play! Would you like to guess or create the code. Type 1 for guess and 2 for create"
+    @roleSetter = gets.chop
+    choose_roles(@roleSetter)
   end
-
+  def code_checker(guess)
+    exact_match_checker(guess)
+    existence_match_checker()
+  end
   def human_play()
     @gameArray = generate_random_code()
     while @winner == false do
         # p @gameArray
         collect_user_input()
         @flags = Array.new(4)
-        exact_match_checker(@guess)
-        existence_match_checker()
+        code_checker(@guess)
         p @flags
         check_win()
     end
@@ -122,12 +150,11 @@ class Mastermind
     while @winner == false do
       p @guess
       @flags = Array.new(4)
-      exact_match_checker(@guess)
-      existence_match_checker()
+      code_checker(@guess)
       white_guess_finder()
       guess_improver()
       check_win()
-      sleep 5
+      sleep 2
     end
   end
 end
