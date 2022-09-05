@@ -1,0 +1,22 @@
+--- !ruby/object:Hangman
+name: gdsgdg
+wrongGuesses:
+- t
+winner: true
+lives: 8
+word: german
+wordArray:
+- g
+- e
+- r
+- m
+- a
+- "n"
+guessHolder:
+- _
+- _
+- _
+- _
+- _
+- _
+guess: german
