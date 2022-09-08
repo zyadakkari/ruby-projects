@@ -49,8 +49,7 @@ def merge_sort(array)
 end
 
 
-merge_sort([7, 3, 2, 1, 6])
-
+merge_sort([7, 3, 2, 1, 4, 8, 5])
 # def merge(arr1, arr2)
 #   sortingArray = []
 #   while arr1.empty? == false && arr2.empty? == false
