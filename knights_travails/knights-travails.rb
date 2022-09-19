@@ -52,29 +52,27 @@ class Board
   def level_order_search(root, queue=[], target)
       # binding.pry
     queue << root
-    while queue[0] != target || queue[0].position != target
+    while !queue.empty?
       begin
         @squares << queue[0].position
         if queue[0].position == target
-          return queue[0].parent
+          return queue[0]
         end
       rescue
         @squares << queue[0]
-        if queue[0] == target
-          return queue[0].parent
-        end
+        # if queue[0] == target
+        #   return queue[0].parent
+        # end
       end
       begin
         for i in (0..queue[0].moves.length-1)
           queue << queue[0].moves[i]
         end
       rescue
-        next
       end
       queue.shift
       queue = queue.compact
     end
-    queue[0].parent
   end
 
   def knight_moves(root, target)
@@ -109,12 +107,9 @@ class Board
       end
       @moves
     end
-
-
   end
-
 end
 
 newBoard = Board.new(8)
-newBoard.build_tree([0,0], [6, 4])
-newBoard.level_order_search(newBoard.root, [6, 4])
+newBoard.build_tree([0,0], [1, 1])
+newBoard.knight_moves(newBoard.root, [1, 1])
