@@ -35,7 +35,7 @@ class Board
     @counter += 1
     rootNode = Knight.new(position, parent)
     address = rootNode
-    if rootNode.moves.include?(target) || @counter > 3
+    if rootNode.moves.include?(target) || @counter > 500
       for i in (0..rootNode.moves.length-1)
         rootNode.moves[i] = Knight.new(rootNode.moves[i], address)
       end
@@ -52,7 +52,7 @@ class Board
   def level_order_search(root, queue=[], target)
       # binding.pry
     queue << root
-    while !queue.empty?
+    while queue[0] != target || queue[0].position != target
       begin
         @squares << queue[0].position
         if queue[0].position == target
@@ -74,6 +74,7 @@ class Board
       queue.shift
       queue = queue.compact
     end
+    queue[0].parent
   end
 
   def knight_moves(root, target)
@@ -116,4 +117,4 @@ end
 
 newBoard = Board.new(8)
 newBoard.build_tree([0,0], [6, 4])
-newBoard.knight_moves(newBoard.root, [6, 4])
+newBoard.level_order_search(newBoard.root, [6, 4])
